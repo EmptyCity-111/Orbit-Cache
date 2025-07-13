@@ -20,7 +20,7 @@ type PeerPicker interface {
 	Close() error
 }
 
-// Peer 缓存节点接口 Get方法用于从对应 group 查找缓存值 Peer 对应HTTP 客户端
+// Peer 缓存节点接口 Get方法用于从对应 group 查找缓存值 Peer 对应 gRPC 客户端
 type Peer interface {
 	Get(group string, key string) ([]byte, error)
 	Set(ctx context.Context, group string, key string, value []byte) error
