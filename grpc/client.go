@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	Orbit "Orbit-Cache"
 	pb "Orbit-Cache/pb"
 	"context"
 	"fmt"
@@ -101,3 +102,6 @@ func (c *Client) Close() error {
 	}
 	return nil
 }
+
+// 编译时检查：确保 *Client 实现了 Peer 接口
+var _ Orbit.Peer = (*Client)(nil)
