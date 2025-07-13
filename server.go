@@ -1,7 +1,6 @@
-package grpc
+package Orbit_Cache
 
 import (
-	Orbit_Cache "Orbit-Cache"
 	pb "Orbit-Cache/pb"
 	"Orbit-Cache/registry"
 	"context"
@@ -153,7 +152,7 @@ func (s *Server) Stop() {
 
 // Get 实现Cache服务的Get方法
 func (s *Server) Get(ctx context.Context, req *pb.Request) (*pb.ResponseForGet, error) {
-	group := Orbit_Cache.GetGroup(req.Group)
+	group := GetGroup(req.Group)
 	if group == nil {
 		return nil, fmt.Errorf("group %s not found", req.Group)
 	}
@@ -167,7 +166,7 @@ func (s *Server) Get(ctx context.Context, req *pb.Request) (*pb.ResponseForGet, 
 
 // Set 实现Cache服务的Set方法
 func (s *Server) Set(ctx context.Context, req *pb.Request) (*pb.ResponseForGet, error) {
-	group := Orbit_Cache.GetGroup(req.Group)
+	group := GetGroup(req.Group)
 	if group == nil {
 		return nil, fmt.Errorf("group %s not found", req.Group)
 	}
@@ -187,7 +186,7 @@ func (s *Server) Set(ctx context.Context, req *pb.Request) (*pb.ResponseForGet, 
 
 // Delete 实现Cache服务的Delete方法
 func (s *Server) Delete(ctx context.Context, req *pb.Request) (*pb.ResponseForDelete, error) {
-	group := Orbit_Cache.GetGroup(req.Group)
+	group := GetGroup(req.Group)
 	if group == nil {
 		return nil, fmt.Errorf("group %s not found", req.Group)
 	}
