@@ -2,12 +2,12 @@ package Orbit_Cache
 
 import (
 	"Orbit-Cache/consistenthash"
-	"Orbit-Cache/grpc"
 	"Orbit-Cache/registry"
 	"context"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	clientv3 "go.etcd.io/etcd/client/v3"
+	"log"
 	"sync"
 	"time"
 )
@@ -34,7 +34,7 @@ type ClientPicker struct {
 	svcName  string
 	mu       sync.RWMutex
 	consHash *consistenthash.Map
-	clients  map[string]*grpc.Client
+	clients  map[string]*Client
 	etcdCli  *clientv3.Client
 	ctx      context.Context
 	cancel   context.CancelFunc
@@ -55,7 +55,7 @@ func NewClientPicker(addr string, opts ...PickerOption) (*ClientPicker, error) {
 	picker := &ClientPicker{
 		selfAddr: addr,
 		svcName:  defaultSvcName,
-		clients:  make(map[string]*grpc.Client),
+		clients:  make(map[string]*Client),
 		consHash: consistenthash.New(),
 		ctx:      ctx,
 		cancel:   cancel,
@@ -162,7 +162,7 @@ func (p *ClientPicker) fetchAllServices() error {
 
 // set 添加服务实例
 func (p *ClientPicker) set(addr string) {
-	if client, err := grpc.NewClient(addr, p.svcName, p.etcdCli); err == nil {
+	if client, err := NewClient(addr, p.svcName, p.etcdCli); err == nil {
 		//利用一致性hash添加服务实例
 		p.consHash.Add(addr)
 		p.clients[addr] = client
@@ -212,4 +212,15 @@ func (p *ClientPicker) Close() error {
 		return fmt.Errorf("errors while closing: %v", errs)
 	}
 	return nil
+}
+
+// PrintPeers 打印当前已发现的节点（仅用于调试）
+func (p *ClientPicker) PrintPeers() {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
+	log.Printf("当前已发现的节点:")
+	for addr := range p.clients {
+		log.Printf("- %s", addr)
+	}
 }
