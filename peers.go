@@ -75,8 +75,13 @@ func NewClientPicker(addr string, opts ...PickerOption) (*ClientPicker, error) {
 	}
 	picker.etcdCli = client
 
-	//启动服务发现
-	//if err := picker.
+	// 启动服务发现
+	if err := picker.startServiceDiscovery(); err != nil {
+		cancel()
+		client.Close()
+		return nil, err
+	}
+
 	return picker, nil
 }
 
